@@ -9,6 +9,7 @@ $(document).ready(function() {
   loader.load(function(loader, res) {
     const LINE_TOP = 52;
     const LINE_SPACING = 31
+    const SCORE_WIDTH = 770;
 
     function createStaffLines(width) {
       let lines = new PIXI.Graphics();
@@ -77,12 +78,12 @@ $(document).ready(function() {
       return bass_clef;
     }
 
-    let treble_clef = createTrebleClef(700);
+    let treble_clef = createTrebleClef(SCORE_WIDTH);
     treble_clef.x = 30;
     treble_clef.y = 30;
     app.stage.addChild(treble_clef);
 
-    let bass_clef = createBassClef(700);
+    let bass_clef = createBassClef(SCORE_WIDTH);
     bass_clef.x = 30;
     bass_clef.y = 300;
     app.stage.addChild(bass_clef);
@@ -96,6 +97,19 @@ $(document).ready(function() {
     let note2 = createNote(-6);
     note2.x = 100;
     treble_clef.addChild(note2);
+
+    const SCORE_LEFT_BOUNDARY = Math.min(res.g_clef.texture.width, res.f_clef.texture.width);
+    const SCORE_RIGHT_BOUNDARY = SCORE_WIDTH - res.whole_note.texture.width;
+
+    let notes = [note1, note2];
+
+    app.ticker.add(function(delta) {
+      for (note of notes) {
+        note.x -= delta * 10;
+        if (note.x <= SCORE_LEFT_BOUNDARY)
+          note.x = SCORE_RIGHT_BOUNDARY;
+      }
+    });
   });
 
 });

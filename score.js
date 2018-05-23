@@ -10,6 +10,7 @@ $(document).ready(function() {
     const LINE_TOP = 52;
     const LINE_SPACING = 31
     const SCORE_WIDTH = 770;
+    const NOTE_SPEED = 3;
 
     function createStaffLines(width) {
       let lines = new PIXI.Graphics();
@@ -82,7 +83,12 @@ $(document).ready(function() {
       name = name.toUpperCase()
       octave = parseInt(name[1]);
       note = {C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6}[name[0]];
-      return note + octave * 8;
+      return note + octave * 7;
+    }
+    function noteIdToName(id) {
+      note = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][id % 7];
+      octave = Math.floor(id / 7);
+      return note + octave.toString();
     }
 
     const SCORE_LEFT_BOUNDARY = Math.min(res.g_clef.texture.width, res.f_clef.texture.width);
@@ -99,9 +105,19 @@ $(document).ready(function() {
       addNote(name) {
         let position = noteNameToId(name) - noteNameToId(this._getMiddleLineNodeName());
         let note = createNote(position);
-        note.x = SCORE_LEFT_BOUNDARY + 30;
+        note.x = SCORE_RIGHT_BOUNDARY;
         this.addChild(note);
         this._notes.push(note);
+      }
+      tick(delta) {
+        for (let i = this._notes.length-1; i >= 0; i--) {
+          let note = this._notes[i];
+          note.x -= delta * NOTE_SPEED;
+          if (note.x < SCORE_LEFT_BOUNDARY) {
+            note.parent.removeChild(note);
+            this._notes.splice(i, 1);
+          }
+        }
       }
     }
 
@@ -127,8 +143,35 @@ $(document).ready(function() {
     bass_clef.y = 300;
     app.stage.addChild(bass_clef);
 
-    treble_clef.addNote('C4');
-    bass_clef.addNote('C3');
+    function randomChoice(choices) {
+      let index = Math.floor(Math.random() * choices.length);
+      return choices[index];
+    }
+    function noteRange(begin, end) {
+      let begin_id = noteNameToId(begin);
+      let end_id = noteNameToId(end);
+      let notes = [];
+      for (let id = begin_id; id <= end_id; id++) {
+        notes.push(noteIdToName(id));
+      }
+      return notes;
+    }
+    function addNotes() {
+      if (randomChoice([0, 1]) == 1) {
+        let treble_note = randomChoice(noteRange('A3', 'D4'))
+        treble_clef.addNote(treble_note);
+      } else {
+        let bass_note = randomChoice(noteRange('A2', 'D3'));
+        bass_clef.addNote(bass_note);
+      }
+      setTimeout(addNotes, 1000);
+    }
+    addNotes();
+
+    app.ticker.add(function(delta) {
+      treble_clef.tick(delta);
+      bass_clef.tick(delta);
+    });
   });
 
 });

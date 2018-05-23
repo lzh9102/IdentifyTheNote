@@ -1,0 +1,8 @@
+#score {
+  width: 800px;
+  height: 600px;
+  line-height: 600px;
+  text-align: center;
+  font-size: 2em;
+  border: 1px solid;
+}

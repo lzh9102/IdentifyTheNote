@@ -6,7 +6,8 @@ $(document).ready(function() {
   loader.add('g_clef', 'assets/img/g_clef_240px.png')
         .add('f_clef', 'assets/img/f_clef_240px.png')
         .add('whole_note', 'assets/img/whole_note.png')
-        .add('explosion', 'assets/img/explosion.json');
+        .add('explosion', 'assets/img/explosion.json')
+        .add('explosion_sound', 'assets/audio/explosion.mp3');
   loader.load(function(loader, res) {
     const LINE_TOP = 52;
     const LINE_SPACING = 31
@@ -191,6 +192,7 @@ $(document).ready(function() {
         explosionSprite.stop();
       };
       explosionSprite.play();
+      res.explosion_sound.sound.play();
       app.stage.addChild(explosionSprite);
     }
     function noteTimeup(note) {

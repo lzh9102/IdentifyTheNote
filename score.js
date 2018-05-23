@@ -91,7 +91,7 @@ $(document).ready(function() {
       return note + octave.toString();
     }
 
-    const SCORE_LEFT_BOUNDARY = Math.min(res.g_clef.texture.width, res.f_clef.texture.width);
+    const SCORE_LEFT_BOUNDARY = Math.max(res.g_clef.texture.width, res.f_clef.texture.width) + 10;
     const SCORE_RIGHT_BOUNDARY = SCORE_WIDTH - res.whole_note.texture.width;
 
     class Clef extends PIXI.Container {

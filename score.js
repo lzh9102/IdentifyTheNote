@@ -64,52 +64,70 @@ $(document).ready(function() {
       return note;
     }
 
-    function createTrebleClef(width) {
+    function createTrebleClefView(width) {
       let treble_clef = new PIXI.Container();
       treble_clef.addChild(new PIXI.Sprite(res.g_clef.texture)); // G-clef
       treble_clef.addChild(createStaffLines(width));
       return treble_clef;
     }
 
-    function createBassClef(width) {
+    function createBassClefView(width) {
       let bass_clef = new PIXI.Container();
       bass_clef.addChild(new PIXI.Sprite(res.f_clef.texture)); // F-clef
       bass_clef.addChild(createStaffLines(width));
       return bass_clef;
     }
 
-    let treble_clef = createTrebleClef(SCORE_WIDTH);
-    treble_clef.x = 30;
-    treble_clef.y = 30;
-    app.stage.addChild(treble_clef);
-
-    let bass_clef = createBassClef(SCORE_WIDTH);
-    bass_clef.x = 30;
-    bass_clef.y = 300;
-    app.stage.addChild(bass_clef);
-
-    // Bass Clef: C
-    let note1 = createNote(-1);
-    note1.x = 100;
-    bass_clef.addChild(note1);
-
-    // Treble Clef: C
-    let note2 = createNote(-6);
-    note2.x = 100;
-    treble_clef.addChild(note2);
+    function noteNameToId(name) {
+      name = name.toUpperCase()
+      octave = parseInt(name[1]);
+      note = {C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6}[name[0]];
+      return note + octave * 8;
+    }
 
     const SCORE_LEFT_BOUNDARY = Math.min(res.g_clef.texture.width, res.f_clef.texture.width);
     const SCORE_RIGHT_BOUNDARY = SCORE_WIDTH - res.whole_note.texture.width;
 
-    let notes = [note1, note2];
-
-    app.ticker.add(function(delta) {
-      for (note of notes) {
-        note.x -= delta * 10;
-        if (note.x <= SCORE_LEFT_BOUNDARY)
-          note.x = SCORE_RIGHT_BOUNDARY;
+    class TrebleClef {
+      constructor(width) {
+        this.view = createTrebleClefView(width);
+        this.notes = [];
       }
-    });
+      addNote(name) {
+        let position = noteNameToId(name) - noteNameToId('B4');
+        let note = createNote(position);
+        note.x = SCORE_LEFT_BOUNDARY + 30;
+        this.view.addChild(note);
+        this.notes.push(note);
+      }
+    }
+
+    class BassClef {
+      constructor(width) {
+        this.view = createBassClefView(width);
+        this.notes = [];
+      }
+      addNote(name) {
+        let position = noteNameToId(name) - noteNameToId('D3');
+        let note = createNote(position);
+        note.x = SCORE_LEFT_BOUNDARY + 30;
+        this.view.addChild(note);
+        this.notes.push(note);
+      }
+    }
+
+    let treble_clef = new TrebleClef(SCORE_WIDTH);
+    treble_clef.view.x = 30;
+    treble_clef.view.y = 30;
+    app.stage.addChild(treble_clef.view);
+
+    let bass_clef = new BassClef(SCORE_WIDTH);
+    bass_clef.view.x = 30;
+    bass_clef.view.y = 300;
+    app.stage.addChild(bass_clef.view);
+
+    treble_clef.addNote('C4');
+    bass_clef.addNote('C3');
   });
 
 });

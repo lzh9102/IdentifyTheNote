@@ -11,6 +11,16 @@ $(document).ready(function() {
     $('#score').empty().append(app.view);
     $(app.view).fadeIn();
 
+    $('#pause').click(function() {
+      if ($(this).val() === 'pause') {
+        app.stop();
+        $(this).val('continue');
+      } else {
+        app.start();
+        $(this).val('pause');
+      }
+    });
+
     const LINE_TOP = 52;
     const LINE_SPACING = 31
     const SCORE_WIDTH = 770;

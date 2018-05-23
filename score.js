@@ -6,11 +6,12 @@ $(document).ready(function() {
   loader.add('g_clef', 'assets/img/g_clef_240px.png')
         .add('f_clef', 'assets/img/f_clef_240px.png')
         .add('whole_note', 'assets/img/whole_note.png')
+        .add('explosion', 'assets/img/explosion.json');
   loader.load(function(loader, res) {
     const LINE_TOP = 52;
     const LINE_SPACING = 31
     const SCORE_WIDTH = 770;
-    const NOTE_SPEED = 3;
+    const NOTE_SPEED = 2;
 
     function createStaffLines(width) {
       let lines = new PIXI.Graphics();
@@ -91,7 +92,7 @@ $(document).ready(function() {
       return note + octave.toString();
     }
 
-    const SCORE_LEFT_BOUNDARY = Math.max(res.g_clef.texture.width, res.f_clef.texture.width) + 10;
+    const SCORE_LEFT_BOUNDARY = Math.max(res.g_clef.texture.width, res.f_clef.texture.width) + 30;
     const SCORE_RIGHT_BOUNDARY = SCORE_WIDTH - res.whole_note.texture.width;
 
     class Clef extends PIXI.Container {
@@ -113,11 +114,16 @@ $(document).ready(function() {
         for (let i = this._notes.length-1; i >= 0; i--) {
           let note = this._notes[i];
           note.x -= delta * NOTE_SPEED;
-          if (note.x < SCORE_LEFT_BOUNDARY) {
+          if (note.x <= SCORE_LEFT_BOUNDARY) {
+            if (this._on_note_timeup_callback)
+              this._on_note_timeup_callback(note);
             note.parent.removeChild(note);
             this._notes.splice(i, 1);
           }
         }
+      }
+      onNoteTimeup(callback) {
+        this._on_note_timeup_callback = callback;
       }
     }
 
@@ -164,9 +170,34 @@ $(document).ready(function() {
         let bass_note = randomChoice(noteRange('A2', 'D3'));
         bass_clef.addNote(bass_note);
       }
-      setTimeout(addNotes, 1000);
+      setTimeout(addNotes, 2000);
     }
     addNotes();
+
+    // explosion
+    let explosionTextures = [];
+    for (i = 0; i < 26; i++) {
+      let texture = PIXI.Texture.fromFrame('Explosion_Sequence_A ' + (i+1) + '.png');
+      explosionTextures.push(texture);
+    }
+    function showExplosionAt(x, y) {
+      let explosionSprite = new PIXI.extras.AnimatedSprite(explosionTextures);
+      explosionSprite.x = x;
+      explosionSprite.y = y;
+      explosionSprite.loop = false;
+      explosionSprite.anchor.set(0.5);
+      explosionSprite.onComplete = function() {
+        app.stage.removeChild(explosionSprite);
+        explosionSprite.stop();
+      };
+      explosionSprite.play();
+      app.stage.addChild(explosionSprite);
+    }
+    function noteTimeup(note) {
+      showExplosionAt(note.parent.x + note.x, note.parent.y + note.y);
+    }
+    treble_clef.onNoteTimeup(noteTimeup);
+    bass_clef.onNoteTimeup(noteTimeup);
 
     app.ticker.add(function(delta) {
       treble_clef.tick(delta);

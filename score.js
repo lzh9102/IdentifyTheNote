@@ -88,43 +88,44 @@ $(document).ready(function() {
     const SCORE_LEFT_BOUNDARY = Math.min(res.g_clef.texture.width, res.f_clef.texture.width);
     const SCORE_RIGHT_BOUNDARY = SCORE_WIDTH - res.whole_note.texture.width;
 
-    class TrebleClef {
+    class Clef extends PIXI.Container {
       constructor(width) {
-        this.view = createTrebleClefView(width);
-        this.notes = [];
+        super();
+        this.addChild(this._createClefView(width));
+        this._notes = [];
       }
+      _createClefView(width) { }
+      _getMiddleLineNodeName() { }
       addNote(name) {
-        let position = noteNameToId(name) - noteNameToId('B4');
+        let position = noteNameToId(name) - noteNameToId(this._getMiddleLineNodeName());
         let note = createNote(position);
         note.x = SCORE_LEFT_BOUNDARY + 30;
-        this.view.addChild(note);
-        this.notes.push(note);
+        this.addChild(note);
+        this._notes.push(note);
       }
     }
 
-    class BassClef {
-      constructor(width) {
-        this.view = createBassClefView(width);
-        this.notes = [];
-      }
-      addNote(name) {
-        let position = noteNameToId(name) - noteNameToId('D3');
-        let note = createNote(position);
-        note.x = SCORE_LEFT_BOUNDARY + 30;
-        this.view.addChild(note);
-        this.notes.push(note);
-      }
+    class TrebleClef extends Clef {
+      constructor(width) { super(width); }
+      _createClefView(width) { return createTrebleClefView(width); }
+      _getMiddleLineNodeName() { return 'B4'; }
+    }
+
+    class BassClef extends Clef {
+      constructor(width) { super(width); }
+      _createClefView(width) { return createBassClefView(width); }
+      _getMiddleLineNodeName() { return 'D3'; }
     }
 
     let treble_clef = new TrebleClef(SCORE_WIDTH);
-    treble_clef.view.x = 30;
-    treble_clef.view.y = 30;
-    app.stage.addChild(treble_clef.view);
+    treble_clef.x = 30;
+    treble_clef.y = 30;
+    app.stage.addChild(treble_clef);
 
     let bass_clef = new BassClef(SCORE_WIDTH);
-    bass_clef.view.x = 30;
-    bass_clef.view.y = 300;
-    app.stage.addChild(bass_clef.view);
+    bass_clef.x = 30;
+    bass_clef.y = 300;
+    app.stage.addChild(bass_clef);
 
     treble_clef.addNote('C4');
     bass_clef.addNote('C3');

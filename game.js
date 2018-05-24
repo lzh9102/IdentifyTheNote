@@ -18,7 +18,8 @@ $(document).ready(function() {
       .add('f_clef', 'assets/img/f_clef_240px.png')
       .add('whole_note', 'assets/img/whole_note.png')
       .add('explosion', 'assets/img/explosion.json')
-      .add('explosion_sound', 'assets/audio/explosion.mp3');
+      .add('explosion_sound', 'assets/audio/explosion.mp3')
+      .add('wrong_sound', 'assets/audio/wrong.mp3');
     loader.load(assetLoadComplete);
   }
 
@@ -267,7 +268,12 @@ $(document).ready(function() {
       // A0 is note number 21 in midi
       return 21 + octave*12 + {'A': 0, 'B': 2, 'C': -9, 'D': -7, 'E': -5, 'F': -4, 'G': -2, 'A': 0, 'B': 2}[note];
     }
+
+    let input_disabled = false;
     $(document).keydown(function(event) {
+      if (input_disabled)
+        return;
+
       // select the clef with the first node
       let clef = null;
       let treble_first_note = treble_clef.getFirstNote();
@@ -288,6 +294,13 @@ $(document).ready(function() {
         MIDI.noteOn(0, midiNote, 127, 0);
         MIDI.noteOff(0, midiNote, 0);
         clef.removeFirstNote();
+      } else { // wrong answer
+        res.wrong_sound.sound.play();
+        // as a penalty, disable the input for a short period of time
+        input_disabled = true;
+        PIXI.setTimeout(1.5/*seconds*/, function() {
+          input_disabled = false;
+        });
       }
     });
 

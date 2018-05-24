@@ -25,6 +25,8 @@ $(document).ready(function() {
   }
 
   function assetLoadComplete(loader, res) {
+    PIXI.sound.volumeAll = 0.2; // lower volume to match midi volume
+
     let app = new PIXI.Application({width: 800, height: 600,
                                     backgroundColor: 0xffffff,
                                     sharedTicker: true});

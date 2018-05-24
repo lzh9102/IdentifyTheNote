@@ -17,6 +17,7 @@ $(document).ready(function() {
     loader.add('g_clef', 'assets/img/g_clef_240px.png')
       .add('f_clef', 'assets/img/f_clef_240px.png')
       .add('whole_note', 'assets/img/whole_note.png')
+      .add('whole_note_red', 'assets/img/whole_note_red.png')
       .add('explosion', 'assets/img/explosion.json')
       .add('explosion_sound', 'assets/audio/explosion.mp3')
       .add('wrong_sound', 'assets/audio/wrong.mp3');
@@ -59,44 +60,68 @@ $(document).ready(function() {
 
     // position: the middle line is 0; upward is positive; downward is negative
     // example: middle C in treble clef -> createNote(-6)
-    function createNote(position) {
-      function positionToY(position) {
+    class Note extends PIXI.Container {
+      static _positionToY(position) {
         return LINE_TOP + 2 * LINE_SPACING - position * (LINE_SPACING/2);
       }
 
-      function createLedgerLines(width, position) {
-        if (position <= -6 || position >= 6) {
-          // ledger lines are drawn at +6, -6, +8, -8, +10, -10, ...
-          let begin = (position > 0) ? 6 : -6;
-          let incr = (position > 0) ? 2 : -2;
-          let count = Math.floor(Math.abs(position - begin) / 2) + 1;
-          let ledger_lines = new PIXI.Graphics();
-          for (let i = 0; i < count; i++) {
-            let ledger_pos = begin + incr * i;
-            let ledger_y = positionToY(ledger_pos);
-            ledger_lines.lineStyle(3, 0x00000000);
-            ledger_lines.moveTo(-10, ledger_y);
-            ledger_lines.lineTo(width + 10, ledger_y);
-          }
-          return ledger_lines;
+      _redrawLedgerLines(color) {
+        if (!this._ledger_lines)
+          return;
+        this._ledger_lines.clear();
+
+        // ledger lines are drawn at +6, -6, +8, -8, +10, -10, ...
+        let position = this._position;
+        let begin = (position > 0) ? 6 : -6;
+        let incr = (position > 0) ? 2 : -2;
+        let count = Math.floor(Math.abs(position - begin) / 2) + 1;
+        for (let i = 0; i < count; i++) {
+          let ledger_pos = begin + incr * i;
+          let ledger_y = Note._positionToY(ledger_pos);
+          this._ledger_lines.lineStyle(3, color);
+          this._ledger_lines.moveTo(-10, ledger_y);
+          this._ledger_lines.lineTo(res.whole_note.texture.width + 10, ledger_y);
         }
-        return null;
       }
 
-      let note = new PIXI.Container();
-      note.y = positionToY(position);
+      _createLedgerLines() {
+        let position = this._position;
+        if (position > -6 && position < 6) // ledger line not needed
+          return;
 
-      let note_body = new PIXI.Sprite(res.whole_note.texture);
-      note_body.y = -note_body.height / 2; // y-center the note
-      note.addChild(note_body);
+        let ledger_lines = new PIXI.Graphics();
+        ledger_lines.y = -this.y; // position ledger lines relative to clef
 
-      let ledger_lines = createLedgerLines(note.width, position);
-      if (ledger_lines) {
-        ledger_lines.y = -note.y; // position ledger lines relative to note
-        note.addChild(ledger_lines);
+        this._ledger_lines = ledger_lines;
+        this._redrawLedgerLines(0x000000);
+
+        this.addChild(ledger_lines);
       }
 
-      return note;
+      _createNoteBody() {
+        let note_body = new PIXI.Sprite(res.whole_note.texture);
+        note_body.y = -note_body.height / 2; // y-center the note
+        this.addChild(note_body);
+        this._note_body = note_body;
+      }
+
+      markAsError() {
+        this._note_body.setTexture(res.whole_note_red.texture);
+        this._redrawLedgerLines(0xee0000); // red
+      }
+
+      resetMark() {
+        this._note_body.setTexture(res.whole_note.texture);
+        this._redrawLedgerLines(0x000000);
+      }
+
+      constructor(position) {
+        super();
+        this.y = Note._positionToY(position);
+        this._position = position;
+        this._createNoteBody();
+        this._createLedgerLines();
+      }
     }
 
     function createTrebleClefView(width) {
@@ -138,7 +163,7 @@ $(document).ready(function() {
       _getMiddleLineNodeName() { }
       addNote(name) {
         let position = noteNameToId(name) - noteNameToId(this._getMiddleLineNodeName());
-        let note = createNote(position);
+        let note = new Note(position);
         note.x = SCORE_RIGHT_BOUNDARY;
         this.addChild(note);
         this._notes.push({name: name, note: note});
@@ -295,11 +320,14 @@ $(document).ready(function() {
         MIDI.noteOff(0, midiNote, 0);
         clef.removeFirstNote();
       } else { // wrong answer
+        let firstNote = clef.getFirstNote();
         res.wrong_sound.sound.play();
         // as a penalty, disable the input for a short period of time
         input_disabled = true;
+        firstNote.markAsError();
         PIXI.setTimeout(1.5/*seconds*/, function() {
           input_disabled = false;
+          firstNote.resetMark();
         });
       }
     });

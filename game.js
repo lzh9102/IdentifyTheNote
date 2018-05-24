@@ -111,11 +111,26 @@ $(document).ready(function() {
         let note = createNote(position);
         note.x = SCORE_RIGHT_BOUNDARY;
         this.addChild(note);
-        this._notes.push(note);
+        this._notes.push({name: name, note: note});
+      }
+      getFirstNote() {
+        if (this._notes.length > 0)
+          return this._notes[0].note;
+        return null;
+      }
+      getFirstNoteName() {
+        if (this._notes.length > 0)
+          return this._notes[0].name;
+        return null;
+      }
+      removeFirstNote() {
+        let note = this._notes[0].note;
+        note.parent.removeChild(note);
+        this._notes.shift();
       }
       tick(delta) {
         for (let i = this._notes.length-1; i >= 0; i--) {
-          let note = this._notes[i];
+          let note = this._notes[i].note;
           note.x -= delta * NOTE_SPEED;
           if (note.x <= SCORE_LEFT_BOUNDARY) {
             if (this._on_note_timeup_callback)
@@ -202,6 +217,41 @@ $(document).ready(function() {
     }
     treble_clef.onNoteTimeup(noteTimeup);
     bass_clef.onNoteTimeup(noteTimeup);
+
+    // handle keyboard events
+    const KEYCODE_A = 65, KEYCODE_B = 66, KEYCODE_C = 67, KEYCODE_D = 68, KEYCODE_E = 69, KEYCODE_F = 70, KEYCODE_G = 71;
+    function keycodeToNoteName(keycode) {
+      switch (keycode) {
+        case KEYCODE_A: return 'A';
+        case KEYCODE_B: return 'B';
+        case KEYCODE_C: return 'C';
+        case KEYCODE_D: return 'D';
+        case KEYCODE_E: return 'E';
+        case KEYCODE_F: return 'F';
+        case KEYCODE_G: return 'G';
+        default: return null;
+      }
+    }
+    $(document).keydown(function(event) {
+      // select the clef with the first node
+      let clef = null;
+      let treble_first_note = treble_clef.getFirstNote();
+      let bass_first_note = bass_clef.getFirstNote();
+      if (treble_first_note && bass_first_note)
+        clef = (treble_first_note.x < bass_first_note.x) ? treble_clef : bass_clef;
+      else if (treble_first_note || bass_first_note)
+        clef = treble_first_note ? treble_clef : bass_clef;
+      if (!clef)
+        return;
+
+      let note = keycodeToNoteName(event.which);
+      if (!note)
+        return;
+
+      if (note.toUpperCase() === clef.getFirstNoteName()[0].toUpperCase()) {
+        clef.removeFirstNote();
+      }
+    });
 
     app.ticker.add(function(delta) {
       treble_clef.tick(delta);

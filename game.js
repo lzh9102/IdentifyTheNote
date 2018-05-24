@@ -1,11 +1,28 @@
 $(document).ready(function() {
-  let loader = new PIXI.loaders.Loader();
-  loader.add('g_clef', 'assets/img/g_clef_240px.png')
-        .add('f_clef', 'assets/img/f_clef_240px.png')
-        .add('whole_note', 'assets/img/whole_note.png')
-        .add('explosion', 'assets/img/explosion.json')
-        .add('explosion_sound', 'assets/audio/explosion.mp3');
-  loader.load(function(loader, res) {
+
+  MIDI.loadPlugin({
+    soundfontUrl: "assets/soundfont/",
+    instrument: "acoustic_grand_piano",
+    onprogress: function(state, progress) {
+      console.log(state, progress);
+    },
+    onsuccess: function() {
+      MIDI.setVolume(0, 127);
+      loadAssets();
+    }
+  });
+
+  function loadAssets() {
+    let loader = new PIXI.loaders.Loader();
+    loader.add('g_clef', 'assets/img/g_clef_240px.png')
+      .add('f_clef', 'assets/img/f_clef_240px.png')
+      .add('whole_note', 'assets/img/whole_note.png')
+      .add('explosion', 'assets/img/explosion.json')
+      .add('explosion_sound', 'assets/audio/explosion.mp3');
+    loader.load(assetLoadComplete);
+  }
+
+  function assetLoadComplete(loader, res) {
     let app = new PIXI.Application({width: 800, height: 600,
                                     backgroundColor: 0xffffff,
                                     sharedTicker: true});
@@ -244,6 +261,12 @@ $(document).ready(function() {
         default: return null;
       }
     }
+    function noteNameToMidiNote(name) {
+      let note = name[0].toUpperCase();
+      let octave = parseInt(name[1]);
+      // A0 is note number 21 in midi
+      return 21 + octave*12 + {'A': 0, 'B': 2, 'C': -9, 'D': -7, 'E': -5, 'F': -4, 'G': -2, 'A': 0, 'B': 2}[note];
+    }
     $(document).keydown(function(event) {
       // select the clef with the first node
       let clef = null;
@@ -261,6 +284,9 @@ $(document).ready(function() {
         return;
 
       if (note.toUpperCase() === clef.getFirstNoteName()[0].toUpperCase()) {
+        let midiNote = noteNameToMidiNote(clef.getFirstNoteName());
+        MIDI.noteOn(0, midiNote, 127, 0);
+        MIDI.noteOff(0, midiNote, 0);
         clef.removeFirstNote();
       }
     });
@@ -269,6 +295,6 @@ $(document).ready(function() {
       treble_clef.tick(delta);
       bass_clef.tick(delta);
     });
-  });
+  }
 
 });

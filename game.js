@@ -6,7 +6,9 @@ $(document).ready(function() {
         .add('explosion', 'assets/img/explosion.json')
         .add('explosion_sound', 'assets/audio/explosion.mp3');
   loader.load(function(loader, res) {
-    let app = new PIXI.Application({width: 800, height: 600, backgroundColor: 0xffffff});
+    let app = new PIXI.Application({width: 800, height: 600,
+                                    backgroundColor: 0xffffff,
+                                    sharedTicker: true});
     $(app.view).hide();
     $('#score').empty().append(app.view);
     $(app.view).fadeIn();
@@ -198,7 +200,7 @@ $(document).ready(function() {
         let bass_note = randomChoice(noteRange('A2', 'D3'));
         bass_clef.addNote(bass_note);
       }
-      setTimeout(addNotes, 2000);
+      PIXI.setTimeout(2/*seconds*/, addNotes);
     }
     addNotes();
 

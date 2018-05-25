@@ -27,7 +27,7 @@ $(document).ready(function() {
   function assetLoadComplete(loader, res) {
     PIXI.sound.volumeAll = 0.2; // lower volume to match midi volume
 
-    let app = new PIXI.Application({width: 800, height: 600,
+    let app = new PIXI.Application({width: 1000, height: 700,
                                     backgroundColor: 0xffffff,
                                     sharedTicker: true});
     $(app.view).hide();
@@ -46,7 +46,7 @@ $(document).ready(function() {
 
     const LINE_TOP = 52;
     const LINE_SPACING = 31
-    const SCORE_WIDTH = 770;
+    const SCORE_WIDTH = 900;
     const NOTE_SPEED = 2;
 
     function createStaffLines(width) {
@@ -312,6 +312,41 @@ $(document).ready(function() {
         return;
       submitAnswer(notename);
     });
+
+    // input buttons
+    for (let i = 0; i < 7; i++) {
+      let notename = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][i];
+      let solfege = ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Si'][i];
+      let button_width = app.view.width / 7;
+      let button_height = app.view.width / 7;
+      let button = new PIXI.Container();
+
+      let button_box = new PIXI.Graphics();
+      button_box.beginFill(0xff3300);
+      button_box.lineStyle(3, 0x000000);
+      button_box.moveTo(0, 0);
+      button_box.lineTo(0, button_height);
+      button_box.lineTo(button_width, button_height);
+      button_box.lineTo(button_width, 0);
+      button_box.lineTo(0, 0);
+      button_box.endFill();
+      button_box.interactive = true;
+      button_box.buttonMode = true;
+      button_box.on('pointerdown', function() {
+        submitAnswer(notename);
+      });
+      button.addChild(button_box);
+
+      let button_text = new PIXI.Text(notename + "\n(" + solfege + ")",
+        {fontFamily: 'Arial', fontSize: 24, fill: 0x000000, fontSize: 24, align: 'center'});
+      button_text.x = (button_width - button_text.width) / 2;
+      button_text.y = (button_height - button_text.height) / 2;
+      button.addChild(button_text);
+
+      button.x = i * button_width;
+      button.y = app.view.height - button_height;
+      app.stage.addChild(button);
+    }
 
     function submitAnswer(notename) {
       // select the clef with the first node

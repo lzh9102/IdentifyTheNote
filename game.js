@@ -300,7 +300,13 @@ $(document).ready(function() {
     $(document).keydown(function(event) {
       if (input_disabled)
         return;
+      let notename = keycodeToNoteName(event.which);
+      if (!notename)
+        return;
+      submitAnswer(notename);
+    });
 
+    function submitAnswer(notename) {
       // select the clef with the first node
       let clef = null;
       let treble_first_note = treble_clef.getFirstNote();
@@ -312,11 +318,7 @@ $(document).ready(function() {
       if (!clef)
         return;
 
-      let note = keycodeToNoteName(event.which);
-      if (!note)
-        return;
-
-      if (note.toUpperCase() === clef.getFirstNoteName()[0].toUpperCase()) {
+      if (notename.toUpperCase() === clef.getFirstNoteName()[0].toUpperCase()) {
         let midiNote = noteNameToMidiNote(clef.getFirstNoteName());
         MIDI.noteOn(0, midiNote, 127, 0);
         MIDI.noteOff(0, midiNote, 0);
@@ -332,7 +334,7 @@ $(document).ready(function() {
           firstNote.resetMark();
         });
       }
-    });
+    }
 
     app.ticker.add(function(delta) {
       treble_clef.tick(delta);

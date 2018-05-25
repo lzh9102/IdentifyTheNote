@@ -2,13 +2,18 @@
   <head>
     <meta charset="UTF-8">
     <title>Staff Reading Training</title>
-    <script src="lib/jquery-3.3.1.min.js"></script>
-    <script src="lib/pixi.min.js"></script>
-    <script src="lib/pixi-sound.js"></script>
-    <script src="lib/pixi-timeout.min.js"></script>
-    <script src="lib/midi.min.js"></script>
-    <script src="game.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="lib/head.load.min.js"></script>
+    <script>
+      head.load(
+        "lib/jquery-3.3.1.min.js",
+        "lib/pixi.min.js",
+        "lib/pixi-sound.js",
+        "lib/pixi-timeout.min.js",
+        "lib/midi.min.js",
+        "game.js",
+        );
+    </script>
   </head>
   <body>
     <div id="score"><span class="spinner"></span> Loading ...</div>

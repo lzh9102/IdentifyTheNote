@@ -224,6 +224,12 @@ $(document).ready(function() {
     bass_clef.y = 300;
     app.stage.addChild(bass_clef);
 
+    let deadline = new PIXI.Graphics();
+    deadline.lineStyle(3, 0xff0000);
+    deadline.moveTo(30 + SCORE_LEFT_BOUNDARY, 15);
+    deadline.lineTo(30 + SCORE_LEFT_BOUNDARY, 550);
+    app.stage.addChild(deadline);
+
     function randomChoice(choices) {
       let index = Math.floor(Math.random() * choices.length);
       return choices[index];

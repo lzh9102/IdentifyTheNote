@@ -244,7 +244,7 @@ $(document).ready(function() {
       return notes;
     }
     function addNotes() {
-      if (randomChoice([0, 1]) == 1) {
+      if (randomChoice([0, 1]) === 1) {
         let treble_note = randomChoice(noteRange('A3', 'D4'))
         treble_clef.addNote(treble_note);
       } else {

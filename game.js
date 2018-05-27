@@ -338,7 +338,7 @@ $(document).ready(function() {
       button.addChild(button_box);
 
       let button_text = new PIXI.Text(notename + "\n(" + solfege + ")",
-        {fontFamily: 'Arial', fontSize: 24, fill: 0x000000, fontSize: 24, align: 'center'});
+        {fontFamily: 'Arial', fill: 0x000000, fontSize: button_width / 4, align: 'center'});
       button_text.x = (button_width - button_text.width) / 2;
       button_text.y = (button_height - button_text.height) / 2;
       button.addChild(button_text);

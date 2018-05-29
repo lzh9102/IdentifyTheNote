@@ -25,11 +25,8 @@ $(document).ready(function() {
   }
 
   function assetLoadComplete(loader, res) {
-    PIXI.sound.volumeAll = 0.2; // lower volume to match midi volume
+    let app = createGame(res);
 
-    let app = new PIXI.Application({width: 1000, height: 700,
-                                    backgroundColor: 0xffffff,
-                                    sharedTicker: true});
     $(app.view).hide();
     $('#score').empty().append(app.view);
     $(app.view).fadeIn();
@@ -43,11 +40,18 @@ $(document).ready(function() {
         $(this).val('pause');
       }
     });
+  }
 
+  function createGame(res) {
+    let app = new PIXI.Application({width: 1000, height: 700,
+                                    backgroundColor: 0xffffff,
+                                    sharedTicker: true});
     const LINE_TOP = 52;
     const LINE_SPACING = 31
     const SCORE_WIDTH = 900;
     const NOTE_SPEED = 2;
+
+    PIXI.sound.volumeAll = 0.2; // lower sfx volume to match midi volume
 
     function createStaffLines(width) {
       let lines = new PIXI.Graphics();
@@ -382,6 +386,8 @@ $(document).ready(function() {
       treble_clef.tick(delta);
       bass_clef.tick(delta);
     });
+
+    return app;
   }
 
 });

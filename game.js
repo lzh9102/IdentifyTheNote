@@ -118,16 +118,6 @@ $(document).ready(function() {
     game.onQuit(function() {
       switchToView($menu_view);
     });
-
-    $('#pause').click(function() {
-      if ($(this).val() === 'pause') {
-        game.stop();
-        $(this).val('continue');
-      } else {
-        game.start();
-        $(this).val('pause');
-      }
-    });
   }
 
   class Game {

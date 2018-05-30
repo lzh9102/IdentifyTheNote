@@ -135,20 +135,6 @@ $(document).ready(function() {
         }
       }
 
-      function createTrebleClefView(width) {
-        let treble_clef = new PIXI.Container();
-        treble_clef.addChild(new PIXI.Sprite(res.g_clef.texture)); // G-clef
-        treble_clef.addChild(createStaffLines(width));
-        return treble_clef;
-      }
-
-      function createBassClefView(width) {
-        let bass_clef = new PIXI.Container();
-        bass_clef.addChild(new PIXI.Sprite(res.f_clef.texture)); // F-clef
-        bass_clef.addChild(createStaffLines(width));
-        return bass_clef;
-      }
-
       function noteNameToId(name) {
         name = name.toUpperCase()
         let octave = parseInt(name[1]);
@@ -165,13 +151,21 @@ $(document).ready(function() {
       const SCORE_RIGHT_BOUNDARY = SCORE_WIDTH - res.whole_note.texture.width;
 
       class Clef extends PIXI.Container {
+        // virtual methods
+        _getMiddleLineNodeName() { throw new Error('Clef._getMiddleLineNodeName should be implemented'); }
+        _getClefTexture() { throw new Error('Clef._getClefTexture should be implemented'); }
+
         constructor(width) {
           super();
-          this.addChild(this._createClefView(width));
+          this._createClefView(width);
           this._notes = [];
         }
-        _createClefView(width) { }
-        _getMiddleLineNodeName() { }
+        _createClefView(width) {
+          let clef = new PIXI.Container();
+          clef.addChild(new PIXI.Sprite(this._getClefTexture()));
+          clef.addChild(createStaffLines(width));
+          this.addChild(clef);
+        }
         addNote(name) {
           let position = noteNameToId(name) - noteNameToId(this._getMiddleLineNodeName());
           let note = new Note(position);
@@ -213,13 +207,13 @@ $(document).ready(function() {
 
       class TrebleClef extends Clef {
         constructor(width) { super(width); }
-        _createClefView(width) { return createTrebleClefView(width); }
+        _getClefTexture() { return res.g_clef.texture; }
         _getMiddleLineNodeName() { return 'B4'; }
       }
 
       class BassClef extends Clef {
         constructor(width) { super(width); }
-        _createClefView(width) { return createBassClefView(width); }
+        _getClefTexture() { return res.f_clef.texture; }
         _getMiddleLineNodeName() { return 'D3'; }
       }
 

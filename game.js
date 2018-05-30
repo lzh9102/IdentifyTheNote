@@ -285,6 +285,11 @@ $(document).ready(function() {
             }
           }
         }
+        clearNotes() {
+          for (let item of this._notes)
+            item.note.parent.removeChild(item.note);
+          this._notes = [];
+        }
         onNoteTimeup(callback) {
           this._on_note_timeup_callback = callback;
         }
@@ -491,6 +496,8 @@ $(document).ready(function() {
 
       app.stop();
       this._app = app;
+      this._treble_clef = treble_clef;
+      this._bass_clef = bass_clef;
     }
 
     setTrebleEnabled(enabled) {
@@ -523,10 +530,16 @@ $(document).ready(function() {
       this._app.start();
     }
 
+    reset() {
+      this.stop();
+      this._treble_clef.clearNotes();
+      this._bass_clef.clearNotes();
+    }
+
     quit() {
       if (this._on_quit_callback)
         this._on_quit_callback.call(this);
-      this.stop();
+      this.reset();
     }
 
     onQuit(callback) {

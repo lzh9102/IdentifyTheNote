@@ -56,6 +56,33 @@ $(function() {
     $('#treble-enable').prop('checked', true);
     $('#bass-enable').prop('checked', true);
 
+    // save/restore
+    function saveMenuState() {
+      $('#menu').find('.option').each(function() {
+        if (this.id) {
+          let option_name = 'option/' + this.id;
+          if ($(this).is(':checkbox'))
+            Cookies.set(option_name, $(this).prop('checked'));
+          else
+            Cookies.set(option_name, $(this).val());
+        }
+      });
+    }
+    function restoreMenuState() {
+      $('#menu').find('.option').each(function() {
+        if (this.id) {
+          let option = Cookies.get('option/' + this.id);
+          if (option === undefined)
+            return;
+          if ($(this).is(':checkbox'))
+            $(this).prop('checked', option === "true"); // cookie value is string
+          else
+            $(this).val(option);
+        }
+      });
+    }
+    restoreMenuState();
+
     // event handling
     function updateGameOptions() {
       game.setTrebleEnabled($('#treble-enable').prop('checked'));
@@ -65,6 +92,7 @@ $(function() {
       console.log("game option updated");
     }
     $('#start').click(updateGameOptions);
+    $('#start').click(saveMenuState);
   }
 
   MIDI.loadPlugin({

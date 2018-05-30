@@ -55,6 +55,7 @@ $(function() {
     $('#bass-high').val(bass_range[bass_range.length-1]);
     $('#treble-enable').prop('checked', true);
     $('#bass-enable').prop('checked', true);
+    $('#note-speed').val(2);
 
     // save/restore
     function saveMenuState() {
@@ -89,6 +90,8 @@ $(function() {
       game.setBassEnabled($('#bass-enable').prop('checked'));
       game.setTrebleNoteRange($('#treble-low').val(), $('#treble-high').val());
       game.setBassNoteRange($('#bass-low').val(), $('#bass-high').val());
+      game.setNoteSpeed($('#note-speed').val());
+      game.setNoteFrequency( $('#note-speed').val() / 4 ); // the more the speed, the more frequent the notes
       console.log("game option updated");
     }
     $('#start').click(updateGameOptions);
@@ -158,7 +161,9 @@ $(function() {
         bass_begin:   'B1',
         bass_end:     'F4',
         treble_enabled: true,
-        bass_enabled: true
+        bass_enabled: true,
+        note_speed: 2,
+        note_frequency: 0.5,
       };
 
       let app = new PIXI.Application({width: 1000, height: 700,
@@ -168,7 +173,6 @@ $(function() {
       const LINE_TOP = 52;
       const LINE_SPACING = 31
       const SCORE_WIDTH = 900;
-      const NOTE_SPEED = 2;
 
       PIXI.sound.volumeAll = 0.2; // lower sfx volume to match midi volume
 
@@ -362,9 +366,9 @@ $(function() {
           bass_clef.addNote(bass_note);
         }
 
-        PIXI.setTimeout(2/*seconds*/, addNotes);
+        PIXI.setTimeout(1/game._option.note_frequency, addNotes);
       }
-      PIXI.setTimeout(2/*seconds*/, addNotes);
+      PIXI.setTimeout(0, addNotes);
 
       // explosion
       let explosionTextures = [];
@@ -524,8 +528,8 @@ $(function() {
       app.stage.addChild(quit_button);
 
       app.ticker.add(function(delta) {
-        treble_clef.advanceNotes(delta * NOTE_SPEED);
-        bass_clef.advanceNotes(delta * NOTE_SPEED);
+        treble_clef.advanceNotes(delta * game._option.note_speed);
+        bass_clef.advanceNotes(delta * game._option.note_speed);
       });
 
       app.stop();
@@ -552,6 +556,14 @@ $(function() {
     setBassNoteRange(begin, end) {
       this._option.bass_begin = begin;
       this._option.bass_end = end;
+    }
+
+    setNoteSpeed(speed) {
+      this._option.note_speed = speed;
+    }
+
+    setNoteFrequency(freq) {
+      this._option.note_frequency = freq;
     }
 
     getView() {

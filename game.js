@@ -1,6 +1,6 @@
 "use strict";
 
-$(document).ready(function() {
+$(function() {
 
   function noteNameToId(name) {
     name = name.toUpperCase()

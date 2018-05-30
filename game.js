@@ -314,17 +314,27 @@ $(function() {
       app.stage.addChild(deadline);
 
       function randomChoice(choices) {
+        if (choices.length == 0)
+          return null;
         let index = Math.floor(Math.random() * choices.length);
         return choices[index];
       }
       function addNotes() {
-        if (randomChoice([0, 1]) === 1 && game._option.treble_enabled) {
+        let clefs = [];
+        if (game._option.treble_enabled)
+          clefs.push("treble");
+        if (game._option.bass_enabled)
+          clefs.push("bass");
+
+        let choice = randomChoice(clefs);
+        if (choice === "treble") {
           let treble_note = randomChoice(noteRange(game._option.treble_begin, game._option.treble_end));
           treble_clef.addNote(treble_note);
-        } else if (game._option.bass_enabled) {
+        } else if (choice === "bass") {
           let bass_note = randomChoice(noteRange(game._option.bass_begin, game._option.bass_end));
           bass_clef.addNote(bass_note);
         }
+
         PIXI.setTimeout(2/*seconds*/, addNotes);
       }
       PIXI.setTimeout(2/*seconds*/, addNotes);

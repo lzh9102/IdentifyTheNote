@@ -502,6 +502,7 @@ $(function() {
 
     setTrebleEnabled(enabled) {
       this._option.treble_enabled = enabled;
+      this._treble_clef.alpha = enabled ? 1 : 0.3;
     }
 
     setTrebleNoteRange(begin, end) {
@@ -511,6 +512,7 @@ $(function() {
 
     setBassEnabled(enabled) {
       this._option.bass_enabled = enabled;
+      this._bass_clef.alpha = enabled ? 1 : 0.3;
     }
 
     setBassNoteRange(begin, end) {

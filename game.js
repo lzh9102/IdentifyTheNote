@@ -95,19 +95,28 @@ $(document).ready(function() {
     let game = new Game(res);
     initializeMenu(game);
 
-    let $menu = $('#menu');
+    let $game_view = $(game.getView());
+    let $menu_view = $('#menu');
 
-    $menu.hide();
-    $('#score').empty().append($menu);
-    $menu.fadeIn();
+    function switchToView($view) {
+      // detach views first so that they won't be destroyed by empty()
+      $game_view.hide().detach();
+      $menu_view.hide().detach();
+
+      $('#score').empty().append($view);
+      $view.fadeIn();
+    }
+
+    switchToView($menu_view);
 
     $('#start').click(function() {
-      $menu.hide();
-      let game_view = game.getView();
-      $(game_view).hide();
-      $('#score').empty().append(game_view);
-      $(game_view).fadeIn();
+      console.log("start");
+      switchToView($game_view);
       game.start();
+    });
+
+    game.onQuit(function() {
+      switchToView($menu_view);
     });
 
     $('#pause').click(function() {
@@ -448,6 +457,33 @@ $(document).ready(function() {
         }
       }
 
+      // quit button
+      function createQuitButton() {
+        let padding = 10;
+        let button = new PIXI.Container();
+
+        let text = new PIXI.Text("Quit", {fontSize: 20});
+        text.x = text.y = padding;
+
+        let box = new PIXI.Graphics();
+        box.lineStyle(1, 0x0);
+        box.beginFill(0xffff00);
+        box.drawRect(0, 0, text.width + padding*2, text.height + padding*2);
+        box.endFill();
+        box.interactive = true;
+        box.buttonMode = true;
+        box.on('pointerdown', function() {
+          game.quit();
+        });
+
+        button.addChild(box);
+        button.addChild(text);
+
+        return button;
+      }
+      let quit_button = createQuitButton();
+      app.stage.addChild(quit_button);
+
       app.ticker.add(function(delta) {
         treble_clef.advanceNotes(delta * NOTE_SPEED);
         bass_clef.advanceNotes(delta * NOTE_SPEED);
@@ -485,6 +521,16 @@ $(document).ready(function() {
 
     start() {
       this._app.start();
+    }
+
+    quit() {
+      if (this._on_quit_callback)
+        this._on_quit_callback.call(this);
+      this.stop();
+    }
+
+    onQuit(callback) {
+      this._on_quit_callback = callback;
     }
   }
 

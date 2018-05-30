@@ -31,3 +31,19 @@
   50% {opacity: 0.4; }
   100% {opacity: 1.0; }
 }
+
+.hidden {
+  visibility: hidden;
+}
+
+#menu {
+  padding-top: 100px;
+  line-height: 100px;
+  text-align: center;
+}
+
+.button {
+  border-radius: 30%;
+  padding: 30px;
+  cursor: pointer;
+}

@@ -17,18 +17,23 @@
   </head>
   <body>
     <div id="score"><span class="spinner"></span> <span id="loading">Loading ...</span></div>
-    <div id="menu">
-      <input class="option" type="checkbox" id="treble-enable">Treble
-      <select class="option" id="treble-low"></select> ~ <select class="option" id="treble-high"></select>
 
-      <br>
+    <div class="hidden">
+      <div id="menu"> 
+        <input class="option" type="checkbox" id="treble-enable">Treble
+        <select class="option" id="treble-low"></select> ~ <select class="option" id="treble-high"></select>
 
-      <input class="option" type="checkbox" id="bass-enable">Bass
-      <select class="option" id="bass-low"></select> ~ <select class="option" id="bass-high"></select>
+        <br>
 
-      <br>
+        <input class="option" type="checkbox" id="bass-enable">Bass
+        <select class="option" id="bass-low"></select> ~ <select class="option" id="bass-high"></select>
 
-      <input type="button" id="pause" value="pause">
+        <br>
+
+        <input class="button" type="button" id="start" value="Start">
+
+      </div>
     </div>
+    <input type="button" id="pause" value="pause">
   </body>
 </html>

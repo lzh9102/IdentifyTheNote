@@ -91,10 +91,20 @@ $(document).ready(function() {
     let game = new Game(res);
     setupMenuActions(game);
 
-    let view = game.getView();
-    $(view).hide();
-    $('#score').empty().append(view);
-    $(view).fadeIn();
+    let $menu = $('#menu');
+
+    $menu.hide();
+    $('#score').empty().append($menu);
+    $menu.fadeIn();
+
+    $('#start').click(function() {
+      $menu.hide();
+      let game_view = game.getView();
+      $(game_view).hide();
+      $('#score').empty().append(game_view);
+      $(game_view).fadeIn();
+      game.start();
+    });
 
     $('#pause').click(function() {
       if ($(this).val() === 'pause') {
@@ -124,6 +134,7 @@ $(document).ready(function() {
       let app = new PIXI.Application({width: 1000, height: 700,
         backgroundColor: 0xffffff,
         sharedTicker: true});
+
       const LINE_TOP = 52;
       const LINE_SPACING = 31
       const SCORE_WIDTH = 900;
@@ -308,7 +319,7 @@ $(document).ready(function() {
         }
         PIXI.setTimeout(2/*seconds*/, addNotes);
       }
-      addNotes();
+      PIXI.setTimeout(2/*seconds*/, addNotes);
 
       // explosion
       let explosionTextures = [];
@@ -438,6 +449,7 @@ $(document).ready(function() {
         bass_clef.advanceNotes(delta * NOTE_SPEED);
       });
 
+      app.stop();
       this._app = app;
     }
 

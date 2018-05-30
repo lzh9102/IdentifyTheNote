@@ -194,10 +194,10 @@ $(document).ready(function() {
           note.parent.removeChild(note);
           this._notes.shift();
         }
-        tick(delta) {
+        advanceNotes(x_delta) {
           for (let i = this._notes.length-1; i >= 0; i--) {
             let note = this._notes[i].note;
-            note.x -= delta * NOTE_SPEED;
+            note.x -= x_delta;
             if (note.x <= SCORE_LEFT_BOUNDARY) {
               if (this._on_note_timeup_callback)
                 this._on_note_timeup_callback(note);
@@ -388,8 +388,8 @@ $(document).ready(function() {
       }
 
       app.ticker.add(function(delta) {
-        treble_clef.tick(delta);
-        bass_clef.tick(delta);
+        treble_clef.advanceNotes(delta * NOTE_SPEED);
+        bass_clef.advanceNotes(delta * NOTE_SPEED);
       });
 
       this._app = app;

@@ -2,6 +2,55 @@
 
 $(document).ready(function() {
 
+  function noteNameToId(name) {
+    name = name.toUpperCase()
+    let octave = parseInt(name[1]);
+    let note = {C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6}[name[0]];
+    return note + octave * 7;
+  }
+
+  function noteIdToName(id) {
+    let note = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][id % 7];
+    let octave = Math.floor(id / 7);
+    return note + octave.toString();
+  }
+
+  function noteRange(begin, end) {
+    let begin_id = noteNameToId(begin);
+    let end_id = noteNameToId(end);
+    let notes = [];
+    if (begin_id <= end_id) { // ascending
+      for (let id = begin_id; id <= end_id; id++) {
+        notes.push(noteIdToName(id));
+      }
+    } else { // descending
+      for (let id = begin_id; id >= end_id; id--) {
+        notes.push(noteIdToName(id));
+      }
+    }
+    return notes;
+  }
+
+  function initializeMenu() {
+    let treble_range = noteRange('G3', 'D6');
+    let bass_range = noteRange('B1', 'F4');
+    function populateSelectInput($sel, choices) {
+      for (let choice of choices) {
+        $sel.append($('<option>', {
+          value: choice,
+          text: choice
+        }));
+      }
+    }
+    populateSelectInput($('#treble-low'), treble_range);
+    populateSelectInput($('#treble-high'), treble_range);
+    populateSelectInput($('#bass-low'), bass_range);
+    populateSelectInput($('#bass-high'), bass_range);
+    $('#treble-enable').prop('checked', true);
+    $('#bass-enable').prop('checked', true);
+  }
+  initializeMenu();
+
   MIDI.loadPlugin({
     soundfontUrl: "assets/soundfont/",
     instrument: "acoustic_grand_piano",
@@ -135,18 +184,6 @@ $(document).ready(function() {
         }
       }
 
-      function noteNameToId(name) {
-        name = name.toUpperCase()
-        let octave = parseInt(name[1]);
-        let note = {C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6}[name[0]];
-        return note + octave * 7;
-      }
-      function noteIdToName(id) {
-        let note = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][id % 7];
-        let octave = Math.floor(id / 7);
-        return note + octave.toString();
-      }
-
       const SCORE_LEFT_BOUNDARY = Math.max(res.g_clef.texture.width, res.f_clef.texture.width) + 30;
       const SCORE_RIGHT_BOUNDARY = SCORE_WIDTH - res.whole_note.texture.width;
 
@@ -236,15 +273,6 @@ $(document).ready(function() {
       function randomChoice(choices) {
         let index = Math.floor(Math.random() * choices.length);
         return choices[index];
-      }
-      function noteRange(begin, end) {
-        let begin_id = noteNameToId(begin);
-        let end_id = noteNameToId(end);
-        let notes = [];
-        for (let id = begin_id; id <= end_id; id++) {
-          notes.push(noteIdToName(id));
-        }
-        return notes;
       }
       function addNotes() {
         if (randomChoice([0, 1]) === 1) {

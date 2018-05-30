@@ -51,6 +51,18 @@ $(document).ready(function() {
   }
   initializeMenu();
 
+  function setupMenuActions(game) {
+    function updateGameOptions() {
+      game.setTrebleEnabled($('#treble-enable').prop('checked'));
+      game.setBassEnabled($('#bass-enable').prop('checked'));
+      game.setTrebleNoteRange($('#treble-low').val(), $('#treble-high').val());
+      game.setBassNoteRange($('#bass-low').val(), $('#bass-high').val());
+      console.log("game option updated");
+    }
+    $('#menu .option').change(updateGameOptions);
+    updateGameOptions();
+  }
+
   MIDI.loadPlugin({
     soundfontUrl: "assets/soundfont/",
     instrument: "acoustic_grand_piano",
@@ -77,8 +89,9 @@ $(document).ready(function() {
 
   function assetLoadComplete(loader, res) {
     let game = new Game(res);
-    let view = game.getView();
+    setupMenuActions(game);
 
+    let view = game.getView();
     $(view).hide();
     $('#score').empty().append(view);
     $(view).fadeIn();
@@ -97,6 +110,17 @@ $(document).ready(function() {
   class Game {
 
     constructor(res) {
+      let game = this;
+
+      game._option = {
+        treble_begin: 'G3',
+        treble_end:   'D6',
+        bass_begin:   'B1',
+        bass_end:     'F4',
+        treble_enabled: true,
+        bass_enabled: true
+      };
+
       let app = new PIXI.Application({width: 1000, height: 700,
         backgroundColor: 0xffffff,
         sharedTicker: true});
@@ -275,11 +299,11 @@ $(document).ready(function() {
         return choices[index];
       }
       function addNotes() {
-        if (randomChoice([0, 1]) === 1) {
-          let treble_note = randomChoice(noteRange('A3', 'D4'))
+        if (randomChoice([0, 1]) === 1 && game._option.treble_enabled) {
+          let treble_note = randomChoice(noteRange(game._option.treble_begin, game._option.treble_end));
           treble_clef.addNote(treble_note);
-        } else {
-          let bass_note = randomChoice(noteRange('A2', 'D3'));
+        } else if (game._option.bass_enabled) {
+          let bass_note = randomChoice(noteRange(game._option.bass_begin, game._option.bass_end));
           bass_clef.addNote(bass_note);
         }
         PIXI.setTimeout(2/*seconds*/, addNotes);
@@ -415,6 +439,24 @@ $(document).ready(function() {
       });
 
       this._app = app;
+    }
+
+    setTrebleEnabled(enabled) {
+      this._option.treble_enabled = enabled;
+    }
+
+    setTrebleNoteRange(begin, end) {
+      this._option.treble_begin = begin;
+      this._option.treble_end = end;
+    }
+
+    setBassEnabled(enabled) {
+      this._option.bass_enabled = enabled;
+    }
+
+    setBassNoteRange(begin, end) {
+      this._option.bass_begin = begin;
+      this._option.bass_end = end;
     }
 
     getView() {

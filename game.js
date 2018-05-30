@@ -395,6 +395,7 @@ $(function() {
       // handle keyboard events
       const KEYCODE_A = 65, KEYCODE_B = 66, KEYCODE_C = 67, KEYCODE_D = 68, KEYCODE_E = 69, KEYCODE_F = 70, KEYCODE_G = 71;
       const KEYCODE_1 = 49, KEYCODE_2 = 50, KEYCODE_3 = 51, KEYCODE_4 = 52, KEYCODE_5 = 53, KEYCODE_6 = 54, KEYCODE_7 = 55;
+      const KEYCODE_ESC = 27;
       function keycodeToNoteName(keycode) {
         switch (keycode) {
           case KEYCODE_A: case KEYCODE_6: return 'A';
@@ -416,6 +417,12 @@ $(function() {
 
       let input_disabled = false;
       $(document).keydown(function(event) {
+        if (!game._started)
+          return;
+        if (event.which == KEYCODE_ESC) {
+          game.quit();
+          return;
+        }
         if (input_disabled)
           return;
         let notename = keycodeToNoteName(event.which);
@@ -553,10 +560,12 @@ $(function() {
 
     stop() {
       this._app.stop();
+      this._started = false;
     }
 
     start() {
       this._app.start();
+      this._started = true;
     }
 
     reset() {

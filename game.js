@@ -31,7 +31,8 @@ $(document).ready(function() {
     return notes;
   }
 
-  function initializeMenu() {
+  function initializeMenu(game) {
+    // populate range options
     let treble_range = noteRange('G3', 'D6');
     let bass_range = noteRange('B1', 'F4');
     function populateSelectInput($sel, choices) {
@@ -46,12 +47,16 @@ $(document).ready(function() {
     populateSelectInput($('#treble-high'), treble_range);
     populateSelectInput($('#bass-low'), bass_range);
     populateSelectInput($('#bass-high'), bass_range);
+
+    // default values
+    $('#treble-low').val(treble_range[0]);
+    $('#treble-high').val(treble_range[treble_range.length-1]);
+    $('#bass-low').val(bass_range[0]);
+    $('#bass-high').val(bass_range[bass_range.length-1]);
     $('#treble-enable').prop('checked', true);
     $('#bass-enable').prop('checked', true);
-  }
-  initializeMenu();
 
-  function setupMenuActions(game) {
+    // event handling
     function updateGameOptions() {
       game.setTrebleEnabled($('#treble-enable').prop('checked'));
       game.setBassEnabled($('#bass-enable').prop('checked'));
@@ -59,8 +64,7 @@ $(document).ready(function() {
       game.setBassNoteRange($('#bass-low').val(), $('#bass-high').val());
       console.log("game option updated");
     }
-    $('#menu .option').change(updateGameOptions);
-    updateGameOptions();
+    $('#start').click(updateGameOptions);
   }
 
   MIDI.loadPlugin({
@@ -89,7 +93,7 @@ $(document).ready(function() {
 
   function assetLoadComplete(loader, res) {
     let game = new Game(res);
-    setupMenuActions(game);
+    initializeMenu(game);
 
     let $menu = $('#menu');
 

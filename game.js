@@ -155,17 +155,6 @@ $(function() {
     constructor(res) {
       let game = this;
 
-      game._option = {
-        treble_begin: 'G3',
-        treble_end:   'D6',
-        bass_begin:   'B1',
-        bass_end:     'F4',
-        treble_enabled: true,
-        bass_enabled: true,
-        note_speed: 2,
-        note_frequency: 0.5,
-      };
-
       let app = new PIXI.Application({width: 1000, height: 700,
         backgroundColor: 0xffffff,
         sharedTicker: true});
@@ -359,10 +348,10 @@ $(function() {
 
         let choice = randomChoice(clefs);
         if (choice === "treble") {
-          let treble_note = randomChoice(noteRange(game._option.treble_begin, game._option.treble_end));
+          let treble_note = game._treble_note_generator.nextChoice();
           treble_clef.addNote(treble_note);
         } else if (choice === "bass") {
-          let bass_note = randomChoice(noteRange(game._option.bass_begin, game._option.bass_end));
+          let bass_note = game._bass_note_generator.nextChoice();
           bass_clef.addNote(bass_note);
         }
 
@@ -536,6 +525,14 @@ $(function() {
       this._app = app;
       this._treble_clef = treble_clef;
       this._bass_clef = bass_clef;
+
+      this._option = {};
+      this.setTrebleNoteRange('G3', 'D6');
+      this.setBassNoteRange('B1', 'F4');
+      this.setTrebleEnabled(true);
+      this.setBassEnabled(true);
+      this.setNoteSpeed(2);
+      this.setNoteFrequency(0.5);
     }
 
     setTrebleEnabled(enabled) {
@@ -544,8 +541,7 @@ $(function() {
     }
 
     setTrebleNoteRange(begin, end) {
-      this._option.treble_begin = begin;
-      this._option.treble_end = end;
+      this._treble_note_generator = new SequenceGenerator(noteRange(begin, end));
     }
 
     setBassEnabled(enabled) {
@@ -554,8 +550,7 @@ $(function() {
     }
 
     setBassNoteRange(begin, end) {
-      this._option.bass_begin = begin;
-      this._option.bass_end = end;
+      this._bass_note_generator = new SequenceGenerator(noteRange(begin, end));
     }
 
     setNoteSpeed(speed) {
@@ -596,5 +591,19 @@ $(function() {
       this._on_quit_callback = callback;
     }
   }
+
+  class SequenceGenerator
+  {
+    constructor(choices) {
+      this._choices = choices.slice(); // clone the array
+    }
+    nextChoice() {
+      let num_choices = this._choices.length;
+      if (num_choices == 0)
+        return null;
+      let index = Math.floor(Math.random() * num_choices);
+      return this._choices[index];
+    }
+  };
 
 });

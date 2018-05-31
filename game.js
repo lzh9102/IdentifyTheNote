@@ -49,10 +49,10 @@ $(function() {
     populateSelectInput($('#bass-high'), bass_range);
 
     // default values
-    $('#treble-low').val(treble_range[0]);
-    $('#treble-high').val(treble_range[treble_range.length-1]);
-    $('#bass-low').val(bass_range[0]);
-    $('#bass-high').val(bass_range[bass_range.length-1]);
+    $('#treble-low').val('C4');
+    $('#treble-high').val('G4');
+    $('#bass-low').val('C3');
+    $('#bass-high').val('G3');
     $('#treble-enable').prop('checked', true);
     $('#bass-enable').prop('checked', true);
     $('#note-speed').val(2);

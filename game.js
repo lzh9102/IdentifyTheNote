@@ -538,16 +538,24 @@ $(function() {
 
       // quit button
       function createQuitButton() {
-        let padding = 10;
+        const padding = 10;
         let button = new PIXI.Container();
 
         let text = new PIXI.Text("Quit", {fontSize: 20});
         text.x = text.y = padding;
 
+        const button_width = text.width + padding*2;
+        const button_height = text.height + padding*2;
+
         let box = new PIXI.Graphics();
         box.lineStyle(1, 0x0);
         box.beginFill(0xffff00);
-        box.drawRect(0, 0, text.width + padding*2, text.height + padding*2);
+        box.moveTo(button_width, 0);
+        box.lineTo(button_width, button_height);
+        box.lineTo(0, button_height);
+        box.lineStyle(0, 0x0);
+        box.lineTo(0, 0);
+        box.lineTo(button_width, 0);
         box.endFill();
         box.interactive = true;
         box.buttonMode = true;

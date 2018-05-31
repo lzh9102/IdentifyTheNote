@@ -541,7 +541,7 @@ $(function() {
     }
 
     setTrebleNoteRange(begin, end) {
-      this._treble_note_generator = new SequenceGenerator(noteRange(begin, end));
+      this._treble_note_generator = new PermutationGenerator(noteRange(begin, end));
     }
 
     setBassEnabled(enabled) {
@@ -550,7 +550,7 @@ $(function() {
     }
 
     setBassNoteRange(begin, end) {
-      this._bass_note_generator = new SequenceGenerator(noteRange(begin, end));
+      this._bass_note_generator = new PermutationGenerator(noteRange(begin, end));
     }
 
     setNoteSpeed(speed) {
@@ -592,17 +592,30 @@ $(function() {
     }
   }
 
-  class SequenceGenerator
+  class PermutationGenerator
   {
     constructor(choices) {
+      if (choices.length <= 0)
+        throw new Error("PermutationGenerator: choices must have at least 1 element");
       this._choices = choices.slice(); // clone the array
+      this._pointer = 0;
+      this._scrambleChoices();
+    }
+    _scrambleChoices() {
+      for (let i = 0; i < this._choices.length; i++) {
+        let k = Math.floor(Math.random() * this._choices.length);
+        // swap this._choices[i] and this._choices[k]
+        let tmp = this._choices[i];
+        this._choices[i] = this._choices[k];
+        this._choices[k] = tmp;
+      }
     }
     nextChoice() {
-      let num_choices = this._choices.length;
-      if (num_choices == 0)
-        return null;
-      let index = Math.floor(Math.random() * num_choices);
-      return this._choices[index];
+      if (this._pointer >= this._choices.length) { // all choices used
+        this._pointer = 0;
+        this._scrambleChoices();
+      }
+      return this._choices[this._pointer++];
     }
   };
 

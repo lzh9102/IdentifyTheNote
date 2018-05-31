@@ -472,7 +472,7 @@ $(function() {
 
         let button_box = new PIXI.Graphics();
         button_box.beginFill(0xff3300);
-        button_box.lineStyle(3, 0x000000);
+        button_box.lineStyle(1, 0x000000);
         button_box.moveTo(0, 0);
         button_box.lineTo(0, button_height);
         button_box.lineTo(button_width, button_height);

@@ -360,27 +360,38 @@ $(function() {
       PIXI.setTimeout(0, addNotes);
 
       // explosion
-      let explosionTextures = [];
-      for (let i = 0; i < 26; i++) {
-        let texture = PIXI.Texture.fromFrame('Explosion_Sequence_A ' + (i+1) + '.png');
-        explosionTextures.push(texture);
+      class ExplosionEffect {
+        constructor(view, sound) {
+          this._view = view;
+          this._sound = sound;
+          // animation frames
+          this._textures = [];
+          for (let i = 0; i < 26; i++) {
+            let texture = PIXI.Texture.fromFrame('Explosion_Sequence_A ' + (i+1) + '.png');
+            this._textures.push(texture);
+          }
+        }
+        show(x, y) {
+          let view = this._view;
+          let explosionSprite = new PIXI.extras.AnimatedSprite(this._textures);
+          explosionSprite.x = x;
+          explosionSprite.y = y;
+          explosionSprite.loop = false;
+          explosionSprite.anchor.set(0.5);
+          explosionSprite.onComplete = function() {
+            view.removeChild(explosionSprite);
+            explosionSprite.stop();
+          };
+          explosionSprite.play();
+          if (this._sound)
+            this._sound.play();
+          this._view.addChild(explosionSprite);
+        }
       }
-      function showExplosionAt(x, y) {
-        let explosionSprite = new PIXI.extras.AnimatedSprite(explosionTextures);
-        explosionSprite.x = x;
-        explosionSprite.y = y;
-        explosionSprite.loop = false;
-        explosionSprite.anchor.set(0.5);
-        explosionSprite.onComplete = function() {
-          app.stage.removeChild(explosionSprite);
-          explosionSprite.stop();
-        };
-        explosionSprite.play();
-        res.explosion_sound.sound.play();
-        app.stage.addChild(explosionSprite);
-      }
+
+      let explosion = new ExplosionEffect(app.stage, res.explosion_sound.sound);
       function noteTimeup(note) {
-        showExplosionAt(note.parent.x + note.x, note.parent.y + note.y);
+        explosion.show(note.parent.x + note.x, note.parent.y + note.y);
       }
       treble_clef.onNoteTimeup(noteTimeup);
       bass_clef.onNoteTimeup(noteTimeup);

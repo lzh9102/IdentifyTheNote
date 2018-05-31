@@ -96,6 +96,20 @@ $(function() {
     }
     $('#start').click(updateGameOptions);
     $('#start').click(saveMenuState);
+
+    // disable range selection when the clef is unchecked
+    function updateTrebleSelectionState() {
+      let checked = $('#treble-enable').prop('checked');
+      $('#treble-low,#treble-high').prop('disabled', !checked);
+    }
+    function updateBassSelectionState() {
+      let checked = $('#bass-enable').prop('checked');
+      $('#bass-low,#bass-high').prop('disabled', !checked);
+    }
+    updateTrebleSelectionState();
+    updateBassSelectionState();
+    $('#treble-enable').change(updateTrebleSelectionState);
+    $('#bass-enable').change(updateBassSelectionState);
   }
 
   MIDI.loadPlugin({

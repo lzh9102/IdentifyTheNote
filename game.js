@@ -370,22 +370,35 @@ $(function() {
             let texture = PIXI.Texture.fromFrame('Explosion_Sequence_A ' + (i+1) + '.png');
             this._textures.push(texture);
           }
+          this._sprites = new Set();
         }
         show(x, y) {
           let view = this._view;
+          let sprites = this._sprites;
+
           let explosionSprite = new PIXI.extras.AnimatedSprite(this._textures);
           explosionSprite.x = x;
           explosionSprite.y = y;
           explosionSprite.loop = false;
           explosionSprite.anchor.set(0.5);
           explosionSprite.onComplete = function() {
-            view.removeChild(explosionSprite);
             explosionSprite.stop();
+            view.removeChild(explosionSprite);
+            sprites.delete(explosionSprite);
           };
           explosionSprite.play();
+          view.addChild(explosionSprite);
+          sprites.add(explosionSprite);
+
           if (this._sound)
             this._sound.play();
-          this._view.addChild(explosionSprite);
+        }
+        clear() {
+          let view = this._view;
+          // hide sprites only; they will be released once the animation is complete
+          this._sprites.forEach(function(sprite, value2, set) {
+            view.removeChild(sprite);
+          });
         }
       }
 
@@ -536,6 +549,7 @@ $(function() {
       this._app = app;
       this._treble_clef = treble_clef;
       this._bass_clef = bass_clef;
+      this._explosion = explosion;
 
       this._option = {};
       this.setTrebleNoteRange('G3', 'D6');
@@ -590,6 +604,7 @@ $(function() {
       this.stop();
       this._treble_clef.clearNotes();
       this._bass_clef.clearNotes();
+      this._explosion.clear();
     }
 
     quit() {

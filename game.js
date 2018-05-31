@@ -481,10 +481,19 @@ $(function() {
         button_box.endFill();
         button_box.interactive = true;
         button_box.buttonMode = true;
+        button.addChild(button_box);
+
+        // highlight the button box when hovered
+        button_box.alpha = 0.5;
         button_box.on('pointerdown', function() {
           submitAnswer(notename);
         });
-        button.addChild(button_box);
+        button_box.on('pointerover', function() {
+          this.alpha = 1;
+        });
+        button_box.on('pointerout', function() {
+          this.alpha = 0.5;
+        });
 
         let button_text = new PIXI.Text(notename + "\n(" + solfege + ")",
           {fontFamily: 'Arial', fill: 0x000000, fontSize: button_width / 4, align: 'center'});

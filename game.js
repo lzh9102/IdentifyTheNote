@@ -459,10 +459,11 @@ $(function() {
         let notename = keycodeToNoteName(event.which);
         if (!notename)
           return;
-        submitAnswer(notename);
+        triggerNoteButton(notename);
       });
 
       // input buttons
+      let note_buttons = {};
       for (let i = 0; i < 7; i++) {
         const notename = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][i];
         const solfege = ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Si'][i];
@@ -479,6 +480,12 @@ $(function() {
         button.x = i * button_width;
         button.y = app.view.height - button_height;
         app.stage.addChild(button);
+
+        note_buttons[notename] = button;
+      }
+      function triggerNoteButton(notename) {
+        if (note_buttons[notename])
+          note_buttons[notename].trigger();
       }
 
       function submitAnswer(notename) {
@@ -699,6 +706,24 @@ $(function() {
 
       this.addChild(button_box);
       this.addChild(button_text);
+
+      this._box = button_box;
+      this._text = button_text;
+      this._onclick_callback = onclick_callback;
+    }
+
+    // simulate a click on the button
+    trigger() {
+      let button = this;
+
+      // temporary highlight the button
+      button._box.alpha = 1;
+      PIXI.setTimeout(0.15/*seconds*/, function() {
+        button._box.alpha = 0.5;
+      });
+
+      if (this._onclick_callback)
+        this._onclick_callback.call(this);
     }
   };
 

@@ -176,6 +176,7 @@ $(function() {
       const LINE_TOP = 52;
       const LINE_SPACING = 31
       const SCORE_WIDTH = 900;
+      const NOTE_FADEOUT_TIME = 300/*ms*/;
 
       PIXI.sound.volumeAll = 0.2; // lower sfx volume to match midi volume
 
@@ -293,9 +294,12 @@ $(function() {
           return null;
         }
         removeFirstNote() {
-          let note = this._notes[0].note;
-          note.parent.removeChild(note);
-          this._notes.shift();
+          let note = this.getFirstNote();
+          if (note) {
+            this._notes.shift();
+            this.removeChild(note);
+          }
+          return note;
         }
         advanceNotes(x_delta) {
           for (let i = this._notes.length-1; i >= 0; i--) {
@@ -504,7 +508,12 @@ $(function() {
           let midiNote = noteNameToMidiNote(clef.getFirstNoteName());
           MIDI.noteOn(0, midiNote, 127, 0);
           MIDI.noteOff(0, midiNote, 0);
-          clef.removeFirstNote();
+
+          let note = clef.removeFirstNote();
+          clef.addChild(note);
+          fadeOut(note, NOTE_FADEOUT_TIME, function() {
+            clef.removeChild(note);
+          });
         } else { // wrong answer
           let firstNote = clef.getFirstNote();
           res.wrong_sound.sound.play();
@@ -726,5 +735,23 @@ $(function() {
         this._onclick_callback.call(this);
     }
   };
+
+  function fadeOut(view, milliseconds, oncomplete) {
+    const initial_alpha = view.alpha;
+    const interval = 50/*ms*/;
+    function fadeOutStep(i, total) {
+      if (i >= total) {
+        view.alpha = 0;
+        if (oncomplete)
+          oncomplete.call(view);
+        return;
+      }
+      view.alpha = initial_alpha * ((total - i) / total);
+      PIXI.setTimeout(interval/1000 /*sec*/, function() {
+        fadeOutStep(i+1, total);
+      });
+    }
+    fadeOutStep(0, milliseconds / interval);
+  }
 
 });

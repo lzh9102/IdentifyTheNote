@@ -169,7 +169,7 @@ $(function() {
     constructor(res) {
       let game = this;
 
-      let app = new PIXI.Application({width: 1000, height: 700,
+      let app = new PIXI.Application({width: 1000, height: 750,
         backgroundColor: 0xffffff,
         sharedTicker: true});
 
@@ -340,12 +340,12 @@ $(function() {
 
       let treble_clef = new TrebleClef(SCORE_WIDTH);
       treble_clef.x = 30;
-      treble_clef.y = 30;
+      treble_clef.y = 50;
       app.stage.addChild(treble_clef);
 
       let bass_clef = new BassClef(SCORE_WIDTH);
       bass_clef.x = 30;
-      bass_clef.y = 300;
+      bass_clef.y = 320;
       app.stage.addChild(bass_clef);
 
       let deadline = new PIXI.Graphics();

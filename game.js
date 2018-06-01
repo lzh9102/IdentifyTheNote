@@ -238,14 +238,17 @@ $(function() {
           this._note_body = note_body;
         }
 
+        _redraw(texture, color) {
+          this._note_body.setTexture(texture);
+          this._redrawLedgerLines(color); // red
+        }
+
         markAsError() {
-          this._note_body.setTexture(res.whole_note_red.texture);
-          this._redrawLedgerLines(0xee0000); // red
+          this._redraw(res.whole_note_red.texture, 0xff0000); // red
         }
 
         resetMark() {
-          this._note_body.setTexture(res.whole_note.texture);
-          this._redrawLedgerLines(0x000000);
+          this._redraw(res.whole_note.texture, 0x000000);      // black
         }
 
         constructor(position) {

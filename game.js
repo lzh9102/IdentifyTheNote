@@ -464,42 +464,17 @@ $(function() {
 
       // input buttons
       for (let i = 0; i < 7; i++) {
-        let notename = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][i];
-        let solfege = ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Si'][i];
-        let button_width = app.view.width / 7;
-        let button_height = app.view.width / 7;
-        let button = new PIXI.Container();
+        const notename = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][i];
+        const solfege = ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Si'][i];
+        const button_width = app.view.width / 7;
+        const button_height = app.view.width / 7;
 
-        let button_box = new PIXI.Graphics();
-        button_box.beginFill(0xff3300);
-        button_box.lineStyle(1, 0x000000);
-        button_box.moveTo(0, 0);
-        button_box.lineTo(0, button_height);
-        button_box.lineTo(button_width, button_height);
-        button_box.lineTo(button_width, 0);
-        button_box.lineTo(0, 0);
-        button_box.endFill();
-        button_box.interactive = true;
-        button_box.buttonMode = true;
-        button.addChild(button_box);
-
-        // highlight the button box when hovered
-        button_box.alpha = 0.5;
-        button_box.on('pointerdown', function() {
-          submitAnswer(notename);
+        let button = new NoteInputButton({
+          width: button_width,
+          height: button_height,
+          text: notename + "\n(" + solfege + ")",
+          onclick: function() { submitAnswer(notename); }
         });
-        button_box.on('pointerover', function() {
-          this.alpha = 1;
-        });
-        button_box.on('pointerout', function() {
-          this.alpha = 0.5;
-        });
-
-        let button_text = new PIXI.Text(notename + "\n(" + solfege + ")",
-          {fontFamily: 'Arial', fill: 0x000000, fontSize: button_width / 4, align: 'center'});
-        button_text.x = (button_width - button_text.width) / 2;
-        button_text.y = (button_height - button_text.height) / 2;
-        button.addChild(button_text);
 
         button.x = i * button_width;
         button.y = app.view.height - button_height;
@@ -673,6 +648,57 @@ $(function() {
         this._scrambleChoices();
       }
       return this._choices[this._pointer++];
+    }
+  };
+
+  class NoteInputButton extends PIXI.Container {
+    constructor(options) {
+      super();
+
+      if (options.width === undefined)
+        throw new Error("width is undefined");
+      if (options.height === undefined)
+        throw new Error("height is undefined");
+
+      const fillcolor = options.fill || 0xff3300;
+      const text = options.text || "";
+
+      let button_box = new PIXI.Graphics();
+      button_box.beginFill(fillcolor);
+      button_box.lineStyle(1, 0x000000);
+      button_box.moveTo(0, 0);
+      button_box.lineTo(0, options.height);
+      button_box.lineTo(options.width, options.height);
+      button_box.lineTo(options.width, 0);
+      button_box.lineTo(0, 0);
+      button_box.endFill();
+      button_box.interactive = true;
+      button_box.buttonMode = true;
+
+      // handle click event
+      let button = this;
+      let onclick_callback = options.onclick;
+      button_box.on('pointerdown', function() {
+        if (onclick_callback)
+          onclick_callback.call(button);
+      });
+
+      // highlight the button box when hovered
+      button_box.alpha = 0.5;
+      button_box.on('pointerover', function() {
+        this.alpha = 1;
+      });
+      button_box.on('pointerout', function() {
+        this.alpha = 0.5;
+      });
+
+      let button_text = new PIXI.Text(text,
+        {fontFamily: 'Arial', fill: 0x000000, fontSize: options.width / 4, align: 'center'});
+      button_text.x = (options.width - button_text.width) / 2;
+      button_text.y = (options.height - button_text.height) / 2;
+
+      this.addChild(button_box);
+      this.addChild(button_text);
     }
   };
 

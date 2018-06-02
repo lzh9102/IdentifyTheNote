@@ -122,6 +122,10 @@ $(function() {
       loadAssets();
     }
   });
+  function midiPlayNote(midiNote) {
+    MIDI.noteOn(0, midiNote, 127, 0);
+    MIDI.noteOff(0, midiNote, 0);
+  }
 
   function loadAssets() {
     let loader = new PIXI.loaders.Loader();
@@ -509,8 +513,7 @@ $(function() {
 
         if (notename.toUpperCase() === clef.getFirstNoteName()[0].toUpperCase()) {
           let midiNote = noteNameToMidiNote(clef.getFirstNoteName());
-          MIDI.noteOn(0, midiNote, 127, 0);
-          MIDI.noteOff(0, midiNote, 0);
+          midiPlayNote(midiNote);
 
           let note = clef.removeFirstNote();
           clef.addChild(note);

@@ -1,5 +1,7 @@
 A simple game to help you memorize note locations on the treble clef and the bass clef.
 
+[Demo](https://lzh9102.github.io/IdentifyTheNote)
+
 ## Acknowledgements
 
 - This project uses the following libraries

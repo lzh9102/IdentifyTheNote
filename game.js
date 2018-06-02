@@ -33,8 +33,8 @@ $(function() {
 
   function initializeMenu(game) {
     // populate range options
-    let treble_range = noteRange('G3', 'D6');
-    let bass_range = noteRange('B1', 'F4');
+    let treble_range = noteRange('D6', 'G3');
+    let bass_range = noteRange('F4', 'B1');
     function populateSelectInput($sel, choices) {
       for (let choice of choices) {
         $sel.append($('<option>', {

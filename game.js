@@ -129,8 +129,8 @@ $(function() {
 
   function loadAssets() {
     let loader = new PIXI.loaders.Loader();
-    loader.add('g_clef', 'assets/img/g_clef_240px.png')
-      .add('f_clef', 'assets/img/f_clef_240px.png')
+    loader.add('g_clef', 'assets/img/g_clef_192px.png')
+      .add('f_clef', 'assets/img/f_clef_192px.png')
       .add('whole_note', 'assets/img/whole_note.png')
       .add('whole_note_red', 'assets/img/whole_note_red.png')
       .add('explosion', 'assets/img/explosion.json')
@@ -173,14 +173,24 @@ $(function() {
     constructor(res) {
       let game = this;
 
-      let app = new PIXI.Application({width: 1000, height: 750,
+      const GAME_WIDTH = $('#score').width(), GAME_HEIGHT = $('#score').height();
+      let app = new PIXI.Application({
+        width: GAME_WIDTH,
+        height: GAME_HEIGHT,
         backgroundColor: 0xffffff,
-        sharedTicker: true});
+        sharedTicker: true
+      });
 
-      const LINE_TOP = 52;
-      const LINE_SPACING = 31
-      const SCORE_WIDTH = 900;
+      // Parameters for drawing the staff lines (y-position relative to the G-clef/F-clef)
+      const LINE_TOP = 41.6;       // y-position of the topmost line
+      const LINE_SPACING = 24.8;   // spacing between each line
+
+      const SCORE_MARGIN = 30;
+      const SCORE_WIDTH = GAME_WIDTH - SCORE_MARGIN * 2;
       const NOTE_FADEOUT_TIME = 300/*ms*/;
+
+      const TREBLE_CLEF_X = SCORE_MARGIN, TREBLE_CLEF_Y = 40;
+      const BASS_CLEF_X = SCORE_MARGIN, BASS_CLEF_Y = 250;
 
       PIXI.sound.volumeAll = 0.2; // lower sfx volume to match midi volume
 
@@ -264,7 +274,7 @@ $(function() {
         }
       }
 
-      const SCORE_LEFT_BOUNDARY = Math.max(res.g_clef.texture.width, res.f_clef.texture.width) + 30;
+      const SCORE_LEFT_BOUNDARY = Math.max(res.g_clef.texture.width, res.f_clef.texture.width) * 1.2;
       const SCORE_RIGHT_BOUNDARY = SCORE_WIDTH - res.whole_note.texture.width;
 
       class Clef extends PIXI.Container {
@@ -343,19 +353,19 @@ $(function() {
       }
 
       let treble_clef = new TrebleClef(SCORE_WIDTH);
-      treble_clef.x = 30;
-      treble_clef.y = 50;
+      treble_clef.x = TREBLE_CLEF_X;
+      treble_clef.y = TREBLE_CLEF_Y;
       app.stage.addChild(treble_clef);
 
       let bass_clef = new BassClef(SCORE_WIDTH);
-      bass_clef.x = 30;
-      bass_clef.y = 320;
+      bass_clef.x = BASS_CLEF_X;
+      bass_clef.y = BASS_CLEF_Y;
       app.stage.addChild(bass_clef);
 
       let deadline = new PIXI.Graphics();
       deadline.lineStyle(3, 0xff0000);
-      deadline.moveTo(30 + SCORE_LEFT_BOUNDARY, 15);
-      deadline.lineTo(30 + SCORE_LEFT_BOUNDARY, 550);
+      deadline.moveTo(TREBLE_CLEF_X + SCORE_LEFT_BOUNDARY, TREBLE_CLEF_Y - 30);
+      deadline.lineTo(BASS_CLEF_X + SCORE_LEFT_BOUNDARY, BASS_CLEF_Y + bass_clef.height + 30);
       app.stage.addChild(deadline);
 
       function randomChoice(choices) {

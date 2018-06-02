@@ -32,6 +32,10 @@
   100% {opacity: 1.0; }
 }
 
+#project-page-link {
+  font-size: 0.7em;
+}
+
 .hidden {
   visibility: hidden;
 }

@@ -1,10 +1,10 @@
 ## Identify The Note
 
-![screenshot](screenshot.png)
-
 Press the correct button before the note touches the red line.
 
 [Click here to play](https://lzh9102.github.io/IdentifyTheNote)
+
+![screenshot](screenshot.png)
 
 ## Copyright
 

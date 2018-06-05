@@ -30,6 +30,7 @@ See [License](LICENSE.txt)
 - This project uses the following libraries
     * [PixiJS](http://www.pixijs.com/) (MIT License)
     * [pixi-sound](https://github.com/pixijs/pixi-sound) (MIT License)
+    * [pixi-timeout](https://www.npmjs.com/package/pixi-timeout) (MIT License)
     * [MIDI.js](https://github.com/mudcube/MIDI.js/) (MIT License)
     * [jQuery](https://jquery.com/) (MIT License)
     * [Head.JS](https://github.com/headjs/headjs) (MIT License)

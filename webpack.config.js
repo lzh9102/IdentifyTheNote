@@ -11,4 +11,5 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([{from: 'static'}])
   ],
+  mode: "development",
 };

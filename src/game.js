@@ -5,6 +5,8 @@ import 'pixi.js';
 import 'pixi-sound';
 import 'pixi-timeout';
 
+import * as Keyboard from './keyboard.js';
+
 $(function() {
 
   function noteNameToId(name) {
@@ -450,18 +452,15 @@ $(function() {
       bass_clef.onNoteTimeup(noteTimeup);
 
       // handle keyboard events
-      const KEYCODE_A = 65, KEYCODE_B = 66, KEYCODE_C = 67, KEYCODE_D = 68, KEYCODE_E = 69, KEYCODE_F = 70, KEYCODE_G = 71;
-      const KEYCODE_1 = 49, KEYCODE_2 = 50, KEYCODE_3 = 51, KEYCODE_4 = 52, KEYCODE_5 = 53, KEYCODE_6 = 54, KEYCODE_7 = 55;
-      const KEYCODE_ESC = 27;
       function keycodeToNoteName(keycode) {
         switch (keycode) {
-          case KEYCODE_A: case KEYCODE_6: return 'A';
-          case KEYCODE_B: case KEYCODE_7: return 'B';
-          case KEYCODE_C: case KEYCODE_1: return 'C';
-          case KEYCODE_D: case KEYCODE_2: return 'D';
-          case KEYCODE_E: case KEYCODE_3: return 'E';
-          case KEYCODE_F: case KEYCODE_4: return 'F';
-          case KEYCODE_G: case KEYCODE_5: return 'G';
+          case Keyboard.KEY_A: case Keyboard.KEY_6: return 'A';
+          case Keyboard.KEY_B: case Keyboard.KEY_7: return 'B';
+          case Keyboard.KEY_C: case Keyboard.KEY_1: return 'C';
+          case Keyboard.KEY_D: case Keyboard.KEY_2: return 'D';
+          case Keyboard.KEY_E: case Keyboard.KEY_3: return 'E';
+          case Keyboard.KEY_F: case Keyboard.KEY_4: return 'F';
+          case Keyboard.KEY_G: case Keyboard.KEY_5: return 'G';
           default: return null;
         }
       }
@@ -473,16 +472,16 @@ $(function() {
       }
 
       let input_disabled = false;
-      $(document).keydown(function(event) {
+      Keyboard.onKeyDown(function(keycode) {
         if (!game._started)
           return;
-        if (event.which == KEYCODE_ESC) {
+        if (keycode == Keyboard.KEY_ESC) {
           game.quit();
           return;
         }
         if (input_disabled)
           return;
-        let notename = keycodeToNoteName(event.which);
+        let notename = keycodeToNoteName(keycode);
         if (!notename)
           return;
         triggerNoteButton(notename);

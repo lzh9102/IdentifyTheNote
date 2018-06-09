@@ -1,4 +1,9 @@
-"use strict";
+import $ from 'jquery';
+import Cookies from 'js-cookie';
+import MIDI from 'midi.js';
+import 'pixi.js';
+import 'pixi-sound';
+import 'pixi-timeout';
 
 $(function() {
 

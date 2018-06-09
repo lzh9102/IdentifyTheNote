@@ -6,42 +6,14 @@ import 'pixi-sound';
 import 'pixi-timeout';
 
 import * as Keyboard from './keyboard.js';
+import NoteName from './notename.js';
 
 $(function() {
 
-  function noteNameToId(name) {
-    name = name.toUpperCase()
-    let octave = parseInt(name[1]);
-    let note = {C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6}[name[0]];
-    return note + octave * 7;
-  }
-
-  function noteIdToName(id) {
-    let note = ['C', 'D', 'E', 'F', 'G', 'A', 'B'][id % 7];
-    let octave = Math.floor(id / 7);
-    return note + octave.toString();
-  }
-
-  function noteRange(begin, end) {
-    let begin_id = noteNameToId(begin);
-    let end_id = noteNameToId(end);
-    let notes = [];
-    if (begin_id <= end_id) { // ascending
-      for (let id = begin_id; id <= end_id; id++) {
-        notes.push(noteIdToName(id));
-      }
-    } else { // descending
-      for (let id = begin_id; id >= end_id; id--) {
-        notes.push(noteIdToName(id));
-      }
-    }
-    return notes;
-  }
-
   function initializeMenu(game) {
     // populate range options
-    let treble_range = noteRange('D6', 'G3');
-    let bass_range = noteRange('F4', 'B1');
+    let treble_range = NoteName.range('D6', 'G3');
+    let bass_range = NoteName.range('F4', 'B1');
     function populateSelectInput($sel, choices) {
       for (let choice of choices) {
         $sel.append($('<option>', {
@@ -301,7 +273,7 @@ $(function() {
           this.addChild(clef);
         }
         addNote(name) {
-          let position = noteNameToId(name) - noteNameToId(this._getMiddleLineNodeName());
+          let position = NoteName.toNumericId(name) - NoteName.toNumericId(this._getMiddleLineNodeName());
           let note = new Note(position);
           note.x = SCORE_RIGHT_BOUNDARY;
           this.addChild(note);
@@ -464,12 +436,6 @@ $(function() {
           default: return null;
         }
       }
-      function noteNameToMidiNote(name) {
-        let note = name[0].toUpperCase();
-        let octave = parseInt(name[1]);
-        // A0 is note number 21 in midi
-        return 21 + octave*12 + {'A': 0, 'B': 2, 'C': -9, 'D': -7, 'E': -5, 'F': -4, 'G': -2, 'A': 0, 'B': 2}[note];
-      }
 
       let input_disabled = false;
       Keyboard.onKeyDown(function(keycode) {
@@ -526,7 +492,7 @@ $(function() {
           return;
 
         if (notename.toUpperCase() === clef.getFirstNoteName()[0].toUpperCase()) {
-          let midiNote = noteNameToMidiNote(clef.getFirstNoteName());
+          let midiNote = NoteName.toMidiNoteNumber(clef.getFirstNoteName());
           midiPlayNote(midiNote);
 
           let note = clef.removeFirstNote();
@@ -608,7 +574,7 @@ $(function() {
     }
 
     setTrebleNoteRange(begin, end) {
-      this._treble_note_generator = new PermutationGenerator(noteRange(begin, end));
+      this._treble_note_generator = new PermutationGenerator(NoteName.range(begin, end));
     }
 
     setBassEnabled(enabled) {
@@ -617,7 +583,7 @@ $(function() {
     }
 
     setBassNoteRange(begin, end) {
-      this._bass_note_generator = new PermutationGenerator(noteRange(begin, end));
+      this._bass_note_generator = new PermutationGenerator(NoteName.range(begin, end));
     }
 
     setNoteSpeed(speed) {

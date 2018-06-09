@@ -21,6 +21,13 @@ Press the correct button before the note touches the red line and explodes :boom
 | B (Si) | <kbd>B</kbd> , <kbd>7</kbd> |
 | Quit   | <kbd>Esc</kbd>              |
 
+## Development
+
+1. Install dependencies: `npm install`
+2. Build: `npm run build`
+3. Run development server: `npm run server`
+4. Deploy: `npm run deploy`
+
 ## Copyright
 
 See [License](LICENSE.txt)
